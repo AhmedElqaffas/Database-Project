@@ -1,0 +1,128 @@
+CREATE TABLE department(
+  dept_name             varchar(50),
+  dept_budget           int unsigned,
+  head                  int UNIQUE,
+  head_date             date,
+  PRIMARY KEY(dept_name)
+  
+);
+
+
+CREATE TABLE employee(
+    emp_id              int AUTO_INCREMENT,
+    emp_name            varchar(50) NOT NULL,
+    salary              int unsigned,
+    birth_date          date NOT NULL,
+    employee_mail        varchar(50) UNIQUE NOT NULL,
+    employment_date     date NOT NULL,
+    dept_name           varchar(50) NOT NULL,
+    address             varchar(50),
+    PRIMARY KEY(emp_id),
+    FOREIGN KEY (dept_name) REFERENCES department(dept_name) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+ALTER TABLE department
+  ADD FOREIGN KEY (head) 
+ REFERENCES employee(emp_id) ON DELETE SET NULL ON UPDATE CASCADE;
+
+CREATE TABLE client(
+    client_id           int AUTO_INCREMENT,
+    client_name         varchar(50) NOT NULL,
+    client_mail        varchar(50) UNIQUE NOT NULL,
+    client_phone        varchar(11) UNIQUE,
+    client_city         varchar(20),
+    
+    PRIMARY KEY(client_id)
+);
+
+
+CREATE TABLE project(
+    proj_id             int AUTO_INCREMENT,
+    proj_name           varchar(50) NOT NULL,
+    proj_budget         int unsigned,
+    start_date          date NOT NULL,
+    due_date            date,
+    client_id           int,
+    manager          int,	
+    PRIMARY KEY(proj_id),
+    FOREIGN KEY(client_id) REFERENCES client(client_id) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY(manager) REFERENCES employee(emp_id) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+
+CREATE TABLE supplier(
+    sup_name            varchar(50),
+    sup_city            varchar(20),
+    sup_mail            varchar(50) UNIQUE NOT NULL,
+    sup_phone           varchar(11) UNIQUE,
+    PRIMARY KEY(sup_name)
+);
+
+
+
+CREATE TABLE needs( 
+    request_id      int AUTO_INCREMENT,
+    item          varchar(100) NOT NULL,
+    request_date  date,
+    priority      varchar(10),
+    arrived       boolean,
+    dept_name     varchar(50) NOT NULL,
+    sup_name      varchar(50),
+    price         int unsigned,
+    purchase_date  date,
+    PRIMARY KEY(request_id),
+    FOREIGN KEY(dept_name) REFERENCES department(dept_name) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(sup_name) REFERENCES supplier(sup_name) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+
+CREATE TABLE role(
+ 	role_name         varchar(50),
+    PRIMARY KEY(role_name)        
+);
+
+
+CREATE TABLE proj_dept(
+ 	   proj_id		int,
+       dept_name    varchar(50),
+       PRIMARY KEY(proj_id,dept_name),
+       FOREIGN KEY(proj_id) REFERENCES project(proj_id) ON DELETE CASCADE ON UPDATE CASCADE,
+       FOREIGN KEY(dept_name) REFERENCES department(dept_name) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE proj_emp(
+       proj_id		int,
+       emp_id       int,
+       PRIMARY KEY(proj_id,emp_id),
+       FOREIGN KEY(proj_id) REFERENCES project(proj_id) ON DELETE CASCADE ON UPDATE CASCADE,
+       FOREIGN KEY(emp_id) REFERENCES employee(emp_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+CREATE TABLE role_emp(
+	   emp_id		int,
+	   role_name    varchar(50),
+       role_date    date,
+       active       boolean NOT NULL,
+       PRIMARY KEY(emp_id,role_name,role_date),
+       FOREIGN KEY(role_name) REFERENCES role(role_name) ON DELETE CASCADE ON UPDATE CASCADE,
+       FOREIGN KEY(emp_id) REFERENCES employee(emp_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+CREATE TABLE emp_phone(
+
+	emp_id            int,
+	phone		  varchar(11) UNIQUE,
+	PRIMARY KEY(emp_id,phone),
+	FOREIGN KEY(emp_id) REFERENCES employee(emp_id) ON DELETE CASCADE ON UPDATE CASCADE
+	
+);
+
+CREATE TABLE milestone(
+	proj_id		int,
+	ms_date		date,
+	description     varchar(200),
+	PRIMARY KEY(proj_id,ms_date),
+	FOREIGN KEY(proj_id) REFERENCES project(proj_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
